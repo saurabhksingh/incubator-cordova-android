@@ -18,14 +18,7 @@
 */
 package org.apache.cordova;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,6 +51,7 @@ public class FileTransfer extends Plugin {
     private static final String LINE_START = "--";
     private static final String LINE_END = "\r\n";
     private static final String BOUNDARY =  "*****";
+    private static final String UTF8_ENCODING = "UTF-8";
 
     public static int FILE_NOT_FOUND_ERR = 1;
     public static int INVALID_URL_ERR = 2;
@@ -69,12 +63,19 @@ public class FileTransfer extends Plugin {
     /* (non-Javadoc)
     * @see org.apache.cordova.api.Plugin#execute(java.lang.String, org.json.JSONArray, java.lang.String)
     */
+    @SuppressWarnings("deprecation")
     @Override
     public PluginResult execute(String action, JSONArray args, String callbackId) {
-        String source = null;
-        String target = null;
+        String source;
+        String target;
         try {
-            source = URLDecoder.decode(args.getString(0));
+            try{
+                source = URLDecoder.decode(args.getString(0),UTF8_ENCODING);
+            }
+            catch(UnsupportedEncodingException exc)
+            {
+                source = URLDecoder.decode(args.getString(0));
+            }
             target = args.getString(1);
         } catch (JSONException e) {
             Log.d(LOG_TAG, "Missing source or target");
@@ -129,7 +130,7 @@ public class FileTransfer extends Plugin {
             // Get a input stream of the file on the phone
             FileInputStream fileInputStream = (FileInputStream) getPathFromUri(source);
 
-            DataOutputStream dos = null;
+            DataOutputStream dos;
 
             int bytesRead, bytesAvailable, bufferSize;
             long totalBytes;
@@ -273,17 +274,17 @@ public class FileTransfer extends Plugin {
             dos.close();
 
             //------------------ read the SERVER RESPONSE
-            StringBuffer responseString = new StringBuffer("");
-            DataInputStream inStream;
+            StringBuilder responseString = new StringBuilder("");
+            BufferedReader inStreamReader;
             try {
-                inStream = new DataInputStream ( conn.getInputStream() );
+                inStreamReader = new BufferedReader ( new InputStreamReader(conn.getInputStream() ) );
             } catch(FileNotFoundException e) {
                 Log.e(LOG_TAG, e.toString(), e);
                 throw new IOException("Received error from server");
             }
 
             String line;
-            while (( line = inStream.readLine()) != null) {
+            while (( line = inStreamReader.readLine()) != null) {
                 responseString.append(line);
             }
             Log.d(LOG_TAG, "got response from server");
@@ -293,7 +294,7 @@ public class FileTransfer extends Plugin {
             result.setResponseCode(conn.getResponseCode());
             result.setResponse(responseString.toString());
 
-            inStream.close();
+            inStreamReader.close();
 
             // Revert back to the proper verifier and socket factories
             if (trustEveryone && url.getProtocol().toLowerCase().equals("https")) {
@@ -436,6 +437,7 @@ public class FileTransfer extends Plugin {
      * @param target      	Full path of the file on the file system
      * @return JSONObject 	the downloaded file
      */
+    @SuppressWarnings("unused")
     private PluginResult download(String source, String target) {
         Log.d(LOG_TAG, "download " + source + " to " +  target);
 
@@ -444,7 +446,8 @@ public class FileTransfer extends Plugin {
             File file = getFileFromPath(target);
 
             // create needed directories
-            file.getParentFile().mkdirs();
+            boolean wasDirCreated = file.getParentFile().mkdirs();
+            //TO-DO what if directory creation fails ??
 
             // connect to server
             if (webView.isUrlWhiteListed(source))
@@ -470,7 +473,7 @@ public class FileTransfer extends Plugin {
 
                 InputStream inputStream = connection.getInputStream();
                 byte[] buffer = new byte[1024];
-                int bytesRead = 0;
+                int bytesRead;
 
                 FileOutputStream outputStream = new FileOutputStream(file);
 
