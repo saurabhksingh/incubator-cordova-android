@@ -96,7 +96,7 @@ public class App extends Plugin {
     /**
      * Load the url into the webview.
      *
-     * @param url
+     * @param url           url to load into the webview
      * @param props			Properties that can be passed in to the DroidGap activity (i.e. loadingDialog, wait, ...)
      * @throws JSONException
      */

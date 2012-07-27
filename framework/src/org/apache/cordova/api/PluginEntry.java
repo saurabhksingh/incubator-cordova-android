@@ -92,7 +92,7 @@ public class PluginEntry {
     /**
      * Get the class.
      *
-     * @param clazz
+     * @param clazz  class name to be discovered
      * @return
      * @throws ClassNotFoundException
      */

@@ -226,7 +226,6 @@ public class CameraLauncher extends Plugin implements MediaScannerConnectionClie
     /**
      * Get image from photo library.
      *
-     * @param quality           Compression quality hint (0-100: 0=low quality & high compression, 100=compress of max quality)
      * @param srcType           The album to get image from.
      * @param returnType        Set the type of image to return.
      */
@@ -422,7 +421,6 @@ public class CameraLauncher extends Plugin implements MediaScannerConnectionClie
                                         if (this.encodingType == JPEG) {
                                             exif.createInFile(resizePath);
                                             exif.readExifData();
-                                            rotate = exif.getOrientation();
                                         }
                                     } catch (IOException e) {
                                         e.printStackTrace();
@@ -493,8 +491,7 @@ public class CameraLauncher extends Plugin implements MediaScannerConnectionClie
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private void writeUncompressedImage(Uri uri) throws FileNotFoundException,
-            IOException {
+    private void writeUncompressedImage(Uri uri) throws IOException {
         FileInputStream fis = new FileInputStream(FileUtils.stripFileProtocol(imageUri.toString()));
         OutputStream os = this.cordova.getActivity().getContentResolver().openOutputStream(uri);
         byte[] buffer = new byte[4096];

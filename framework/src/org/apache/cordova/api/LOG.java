@@ -40,17 +40,7 @@ public class LOG {
     /**
      * Set the current log level.
      *
-     * @param logLevel
-     */
-    public static void setLogLevel(int logLevel) {
-        LOGLEVEL = logLevel;
-        Log.i("CordovaLog", "Changing log level to " + logLevel);
-    }
-
-    /**
-     * Set the current log level.
-     *
-     * @param logLevel
+     * @param logLevel  log level for logging messages
      */
     public static void setLogLevel(String logLevel) {
         if ("VERBOSE".equals(logLevel)) LOGLEVEL = VERBOSE;
@@ -59,16 +49,6 @@ public class LOG {
         else if ("WARN".equals(logLevel)) LOGLEVEL = WARN;
         else if ("ERROR".equals(logLevel)) LOGLEVEL = ERROR;
         Log.i("CordovaLog", "Changing log level to " + logLevel + "(" + LOGLEVEL + ")");
-    }
-
-    /**
-     * Determine if log level will be logged
-     *
-     * @param logLevel
-     * @return
-     */
-    public static boolean isLoggable(int logLevel) {
-        return (logLevel >= LOGLEVEL);
     }
 
     /**

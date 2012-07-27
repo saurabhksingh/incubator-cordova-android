@@ -51,8 +51,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     public static int MEDIA_PAUSED = 3;
     public static int MEDIA_STOPPED = 4;
 
-    // AudioPlayer message ids
-    private static int MEDIA_STATE = 1;
     private static int MEDIA_DURATION = 2;
     private static int MEDIA_POSITION = 3;
     private static int MEDIA_ERROR = 9;
@@ -60,9 +58,6 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
     // Media error codes
     private static int MEDIA_ERR_NONE_ACTIVE    = 0;
     private static int MEDIA_ERR_ABORTED        = 1;
-    private static int MEDIA_ERR_NETWORK        = 2;
-    private static int MEDIA_ERR_DECODE         = 3;
-    private static int MEDIA_ERR_NONE_SUPPORTED = 4;
     
     private AudioHandler handler;                   // The AudioHandler object
     private String id;                              // The id of this player (used to identify Media object in JavaScript)
@@ -335,12 +330,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @return                  T=streaming, F=local
      */
     public boolean isStreaming(String file) {
-        if (file.contains("http://") || file.contains("https://")) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return file.contains("http://") || file.contains("https://");
     }
 
     /**
@@ -438,6 +428,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      */
     private void setState(int state) {
         if (this.state != state) {
+            int MEDIA_STATE = 1;
             this.handler.sendJavascript("cordova.require('cordova/plugin/Media').onStatus('" + this.id + "', " + MEDIA_STATE + ", " + state + ");");
         }
 

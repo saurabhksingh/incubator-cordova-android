@@ -20,7 +20,6 @@ package org.apache.cordova.api;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.apache.cordova.CordovaWebView;
@@ -38,7 +37,6 @@ import android.content.res.XmlResourceParser;
  * from JavaScript.
  */
 public class PluginManager {
-    private static String TAG = "PluginManager";
 
     // List of service entries
     private final HashMap<String, PluginEntry> entries = new HashMap<String, PluginEntry>();
@@ -69,6 +67,7 @@ public class PluginManager {
      * Init when loading a new HTML page into webview.
      */
     public void init() {
+        String TAG = "PluginManager";
         LOG.d(TAG, "init()");
 
         // If first time, then load plugins from plugins.xml file
@@ -98,9 +97,10 @@ public class PluginManager {
         }
         XmlResourceParser xml = this.ctx.getActivity().getResources().getXml(id);
         int eventType = -1;
-        String service = "", pluginClass = "";
+        String service = "";
+        String pluginClass = "";
         boolean onload = false;
-        PluginEntry entry = null;
+        PluginEntry entry;
         while (eventType != XmlResourceParser.END_DOCUMENT) {
             if (eventType == XmlResourceParser.START_TAG) {
                 String strNode = xml.getName();
@@ -159,7 +159,7 @@ public class PluginManager {
      *                      how to deal with it.
      * @param callbackId    String containing the id of the callback that is execute in JavaScript if
      *                      this is an async plugin call.
-     * @param args          An Array literal string containing any arguments needed in the
+     * @param jsonArgs          An Array literal string containing any arguments needed in the
      *                      plugin execute method.
      * @param async         Boolean indicating whether the calling JavaScript code is expecting an
      *                      immediate return value. If true, either Cordova.callbackSuccess(...) or
@@ -350,9 +350,7 @@ public class PluginManager {
      * @return                  Return false to allow the URL to load, return true to prevent the URL from loading.
      */
     public boolean onOverrideUrlLoading(String url) {
-        Iterator<Entry<String, String>> it = this.urlMap.entrySet().iterator();
-        while (it.hasNext()) {
-            HashMap.Entry<String, String> pairs = it.next();
+        for (Entry<String, String> pairs : this.urlMap.entrySet()) {
             if (url.startsWith(pairs.getKey())) {
                 return this.getPlugin(pairs.getValue()).onOverrideUrlLoading(url);
             }

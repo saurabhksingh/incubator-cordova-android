@@ -198,7 +198,7 @@ public class AccelListener extends Plugin implements SensorEventListener {
     /**
      * Sensor listener event.
      *
-     * @param SensorEvent event
+     * @param  event sensor event
      */
     public void onSensorChanged(SensorEvent event) {
         // Only look at accelerometer events

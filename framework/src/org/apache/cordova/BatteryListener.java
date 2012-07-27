@@ -123,7 +123,7 @@ public class BatteryListener extends Plugin {
         JSONObject obj = new JSONObject();
         try {
             obj.put("level", batteryIntent.getIntExtra(android.os.BatteryManager.EXTRA_LEVEL, 0));
-            obj.put("isPlugged", batteryIntent.getIntExtra(android.os.BatteryManager.EXTRA_PLUGGED, -1) > 0 ? true : false);
+            obj.put("isPlugged", batteryIntent.getIntExtra(android.os.BatteryManager.EXTRA_PLUGGED, -1) > 0);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
         }
@@ -142,8 +142,8 @@ public class BatteryListener extends Plugin {
 
     /**
      * Create a new plugin result and send it back to JavaScript
-     *
-     * @param connection the network info to set as navigator.connection
+     * @param info
+     * @param keepCallback
      */
     private void sendUpdate(JSONObject info, boolean keepCallback) {
         if (this.batteryCallbackId != null) {
